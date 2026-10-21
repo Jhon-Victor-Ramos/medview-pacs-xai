@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PACS Viewer - Estação de Diagnóstico Clínico</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR: DADOS CLÍNICOS FICTÍCIOS (PADRÃO PACS)
+       ======================================================================== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="system-brand">
+        <span class="brand-dot"></span>
+        <span>MedView PACS</span>
+      </div>
+      <div class="patient-meta">
+        <div class="meta-item">
+          <span class="meta-label">Paciente</span>
+          <span class="meta-value">SILVA, CARLOS EDUARDO</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">ID / Prontuário</span>
+          <span class="meta-value">#849201-7</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Nasc / Sexo</span>
+          <span class="meta-value">14/05/1978 (48a) • M</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Modalidade / Exame</span>
+          <span class="meta-value">CR • RX PUNHO ESQUERDO</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="status-badge" id="pacs-series-status">SÉRIE: 01/01 • RAW</div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       ÁREA DE TRABALHO (SIDEBAR + VIEWPORT)
+       ======================================================================== -->
+  <div class="workspace">
+
+    <!-- BARRA LATERAL ESQUERDA (FERRAMENTAS RADIOLÓGICAS INTERATIVAS) -->
+    <aside class="sidebar">
+      <button class="tool-btn active" id="tool-wl" title="Ajustar Contraste (W/L)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/></svg>
+        <span class="tool-label">W/L</span>
+      </button>
+      <button class="tool-btn" id="tool-zoom" title="Alternar Zoom (100% / 135%)">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6M8 11h6"/></svg>
+        <span class="tool-label">Zoom</span>
+      </button>
+      <button class="tool-btn" id="tool-invert" title="Inverter Cores (Negativo)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor"/></svg>
+        <span class="tool-label">Inverter</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="tool-btn btn-pulse-alert" id="tool-xai" title="Auditoria de Qualidade & Assistente XAI">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12 2.1 10.5"/></svg>
+        <span class="tool-label">XAI</span>
+      </button>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL DE VISUALIZAÇÃO -->
+    <main class="viewport" id="viewport-area">
+
+      <!-- MENU TOGGLE SEMPRE VISÍVEL NO TOPO -->
+      <div class="stage-toggle" id="stage-toggle">
+        <button class="stage-toggle-btn active" data-view="original">Original</button>
+        <button class="stage-toggle-btn" data-view="enhanced">Enhanced</button>
+        <button class="stage-toggle-btn" data-view="both">Both (Lado a Lado)</button>
+      </div>
+
+      <!-- Metadados técnicos DICOM nos 4 cantos -->
+      <div class="dicom-overlay dicom-tl">
+        <div>HOSP. DAS DORES • UNIDADE RADIOLÓGICA</div>
+        <div>ACC: 20261020-0942</div>
+        <div id="dicom-acquisition-note">ACQ: DR SUBEXPOSED (SNR BAIXO)</div>
+      </div>
+
+      <div class="dicom-overlay dicom-tr">
+        <div>58 kVp • 3.2 mAs</div>
+        <div>FOV: 350 mm</div>
+      </div>
+
+      <div class="dicom-overlay dicom-bl">
+        <div id="dicom-wl-note">W: 2048  L: 1024</div>
+        <div id="dicom-zoom-note">ZOOM: 100%</div>
+      </div>
+
+      <div class="dicom-overlay dicom-br">
+        <div id="dicom-filter-tag">FILTRO: NENHUM (ORIGINAL)</div>
+      </div>
+
+      <!-- PALCO CENTRAL DE EXAMES (SUPORTA 1 OU 2 IMAGENS LADO A LADO) -->
+      <div class="comparison-wrapper" id="comparison-wrapper">
+
+        <!-- CARD 1: IMAGEM ORIGINAL (RUIM) -->
+        <div class="xray-stage" id="stage-original">
+          <span class="stage-tag tag-raw">ORIGINAL (RAW • RUÍDO 78%)</span>
+          <img id="xray-img-bad" class="xray-img" src="img/raio-x-ruim.png" alt="Raio-X Original com Ruído" />
+          
+          <!-- Mapa de calor e ROI caso o médico ative XAI olhando a original -->
+          <div class="heatmap-overlay heatmap-sync"></div>
+          <div class="roi-ring roi-sync"></div>
+
+          <!-- Tooltip (i) sempre presente na imagem Original quando ela está sozinha -->
+          <div class="info-icon" id="info-icon-orig">
+            i
+            <div class="info-tooltip">
+              <strong>Ponto de atenção:</strong><br/>
+              Região do escafoide / rádio distal com baixa nitidez cortical na aquisição original.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: IMAGEM ENHANCED (BOA) -->
+        <div class="xray-stage hidden-stage" id="stage-enhanced">
+          <span class="stage-tag tag-enhanced">(FILTRO IA APLICADO)</span>
+          <img id="xray-img-good" class="xray-img" src="img/raio-x-bom.png" alt="Raio-X Restaurado" />
+
+          <!-- Mancha do Mapa de Calor sobreposta -->
+          <div class="heatmap-overlay heatmap-sync"></div>
+          <div class="roi-ring roi-sync"></div>
+
+          <!-- Tooltip (i) sempre presente -->
+          <div class="info-icon" id="info-icon-enh">
+            i
+            <div class="info-tooltip">
+              <strong>Evidência Clínica (Radiopaedia):</strong><br/>
+              Fratura transversal irregular demonstrada através do colo do escafoide / rádio distal após redução de ruído.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ====================================================================
+           ESTADO 3: PAINEL LATERAL DIREITO FLUTUANTE ("2ª OPINIÃO")
+           ==================================================================== -->
+      <section class="xai-panel" id="xai-panel">
+        <div class="xai-header">
+          <div class="xai-title"><span>2ª Opinião • Assistente XAI</span></div>
+          <span class="xai-badge">Grad-CAM Ativo</span>
+        </div>
+
+        <!-- CONTEÚDO PADRÃO DA IA -->
+        <div id="xai-view-main">
+          <div class="xai-finding-box">
+            <p class="xai-finding-text">
+              Anomalia de densidade detectada: <strong>91% de similaridade</strong> com traço de fratura oculta.
+            </p>
+          </div>
+
+          <div class="slider-container">
+            <div class="slider-header">
+              <label for="heatmap-slider" class="slider-label">Opacidade do Mapa de Calor</label>
+              <span class="slider-value" id="slider-percentage">75%</span>
+            </div>
+            <input type="range" id="heatmap-slider" min="0" max="100" value="75" />
+            <div class="slider-scale">
+              <span>0% (Ocultar IA)</span>
+              <span>50%</span>
+              <span>100% (Máx)</span>
+            </div>
+          </div>
+
+          <div class="xai-legend">
+            <span>Relevância da Ativação:</span>
+            <div class="legend-bar"></div>
+          </div>
+
+          <button class="btn-human-call" id="btn-call-human">
+            💬 Consultar Plantonista (Humano)
+          </button>
+        </div>
+
+        <!-- NOVA VISÃO: CHAT HUMANO -->
+        <div class="chat-view" id="xai-view-chat">
+          <div class="chat-bubble msg-out">
+            Solicitando 2ª opinião: suspeita de fratura oculta após realce de ruído...
+          </div>
+          <div class="typing-indicator" id="chat-typing">
+            Dr. Roberto (Teleradiologia) está analisando a lâmina...
+          </div>
+          <div class="chat-bubble msg-in" id="chat-reply" style="display: none;">
+            <strong>Dr. Roberto (Radiologista):</strong> Confirmo o achado da IA. O traço de fratura cortical fica evidente na versão <em>Enhanced</em>. Sugiro imobilização imediata.
+          </div>
+          <button class="btn-back-chat" id="btn-back-xai">← Voltar para Controles da IA</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       ESTADO 2: MODAL CENTRALIZADO DE ALERTA DE RUÍDO ESTRUTURAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="alert-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-tag">Auditoria de Qualidade da Lâmina</span>
+        <span class="modal-code">QA-SNR-78</span>
+      </div>
+      <p class="modal-body-text">
+        ⚠️ <strong>Qualidade de Imagem Subótima (78% de ruído estrutural).</strong><br/><br/>
+        Causa provável: Subexposição ou degradação na aquisição. O diagnóstico visual direto pode ser comprometido. Deseja aplicar a restauração e ver a 2ª opinião da IA?
+      </p>
+      <div class="modal-footer">
+        <button class="btn-secondary-modal" id="btn-modal-cancel">
+          Manter Original
+        </button>
+        <button class="btn-primary-xai" id="btn-modal-apply">
+          Aplicar Filtro IA e Ver 2ª Opinião
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

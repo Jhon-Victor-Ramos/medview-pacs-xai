@@ -1,0 +1,771 @@
+/* ==========================================================================
+   CONFIGURAÇÃO RÁPIDA DO MAPA DE CALOR E DO ÍCONE (i)
+   Dica: Segure SHIFT + CLIQUE sobre a radiografia para posicionar a mancha
+   e o ícone (i) exatamente em cima da fratura antes ou durante o teste.
+   ========================================================================== */
+:root {
+  --heatmap-top: 65%;
+  --heatmap-left: 45%;
+  --heatmap-size: 130px;
+
+  /* Paleta PACS Dark Mode Estrito */
+  --bg-canvas: #0a0a0c;
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-elevated: #252528;
+  --border-clinical: #2e2e32;
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --text-muted: #636366;
+  --accent-clinical: #38bdf8;
+  --alert-amber: #f59e0b;
+  --xai-crimson: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   BARRA SUPERIOR (DADOS DO PACIENTE E ESTUDO DICOM)
+   ========================================================================== */
+.topbar {
+  height: 52px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-clinical);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 13px;
+  z-index: 10;
+}
+
+.topbar-left, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.system-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  padding-right: 16px;
+  border-right: 1px solid var(--border-clinical);
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-clinical);
+}
+
+.patient-meta {
+  display: flex;
+  gap: 20px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.meta-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.meta-value {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-badge {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-clinical);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   ESTRUTURA CENTRAL (SIDEBAR + VIEWPORT PACS)
+   ========================================================================== */
+.workspace {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+/* BARRA LATERAL ESQUERDA */
+.sidebar {
+  width: 58px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-clinical);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 0;
+  gap: 10px;
+  z-index: 10;
+}
+
+.tool-btn {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tool-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.tool-btn.active {
+  background-color: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: var(--accent-clinical);
+}
+
+.tool-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tool-label {
+  font-size: 9px;
+  color: currentColor;
+  letter-spacing: 0.2px;
+}
+
+.sidebar-divider {
+  width: 28px;
+  height: 1px;
+  background-color: var(--border-clinical);
+  margin: 4px 0;
+}
+
+/* Destaque pulsante suave para o botão XAI na Tela 1 */
+.btn-pulse-alert {
+  color: var(--alert-amber) !important;
+  border-color: rgba(245, 158, 11, 0.5) !important;
+  background-color: rgba(245, 158, 11, 0.08);
+  animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* ÁREA PRINCIPAL DE VISUALIZAÇÃO */
+.viewport {
+    flex: 1;
+    background-color: var(--bg-canvas);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+MENU TOGGLE SUPERIOR (SEMPRE VISÍVEL)
+========================================================================== */
+.stage-toggle {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 30, 34, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 40;
+    display: flex;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.stage-toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 7px 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.stage-toggle-btn:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.stage-toggle-btn.active {
+    background-color: rgba(216, 212, 212, 0.05);
+    color: #09090b;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+/* Metadados técnicos de canto (Padrão DICOM) */
+.dicom-overlay {
+    position: absolute;
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #71717a;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.dicom-tl { top: 16px; left: 20px; }
+.dicom-tr { top: 16px; right: 20px; text-align: right; }
+.dicom-bl { bottom: 16px; left: 20px; }
+.dicom-br { bottom: 16px; right: 20px; text-align: right; }
+
+/* ==========================================================================
+PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
+========================================================================== */
+.comparison-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    max-width: 92%;
+    max-height: 82vh;
+    transition: all 0.25s ease;
+}
+
+.xray-stage {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #27272a;
+    background-color: #050505;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    border-radius: 4px;
+    overflow: visible;
+}
+
+.hidden-stage {
+    display: none !important;
+}
+
+/* Etiqueta identificadora de cada imagem (Original vs Enhanced) */
+.stage-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 12;
+    letter-spacing: 0.4px;
+    pointer-events: none;
+    margin: 1rem 20rem 0 0;
+}
+
+
+.tag-raw {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.tag-enhanced {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.xray-img {
+  display: block;
+  max-width: 100%;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+/* Quando está no modo Both (Lado a Lado), ajusta a largura máxima de cada imagem */
+.comparison-wrapper.side-by-side .xray-img {
+  max-width: 42vw;
+  max-height: 74vh;
+}
+
+/* Classes de ferramentas radiológicas */
+.xray-img.zoomed {
+  transform: scale(1.32);
+}
+
+/* ==========================================================================
+   MANCHA DO MAPA DE CALOR E ANEL ROI
+   ========================================================================== */
+.heatmap-overlay {
+  position: absolute;
+  top: var(--heatmap-top);
+  left: var(--heatmap-left);
+  width: var(--heatmap-size);
+  height: var(--heatmap-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 0, 0.95) 0%,
+    rgba(255, 102, 0, 0.85) 32%,
+    rgba(255, 230, 0, 0.55) 58%,
+    rgba(0, 255, 128, 0.15) 75%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  opacity: 0.75;
+  pointer-events: none;
+  display: none;
+  z-index: 6;
+}
+
+.roi-ring {
+  position: absolute;
+  top: var(--heatmap-top);
+  left: var(--heatmap-left);
+  width: calc(var(--heatmap-size) * 0.85);
+  height: calc(var(--heatmap-size) * 0.85);
+  transform: translate(-50%, -50%);
+  border: 1.5px dashed rgba(239, 68, 68, 0.65);
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;
+  z-index: 7;
+}
+
+/* ==========================================================================
+   TOOLTIP DE INFORMAÇÃO (i) - SEMPRE VISÍVEL
+   ========================================================================== */
+.info-icon {
+  position: absolute;
+  top: calc(var(--heatmap-top) - 42px);
+  left: calc(var(--heatmap-left) + 42px);
+  width: 24px;
+  height: 24px;
+  background: rgba(14, 165, 233, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: bold;
+  font-style: italic;
+  cursor: pointer;
+  z-index: 25;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.info-icon:hover {
+  transform: scale(1.15);
+  background: #38bdf8;
+}
+
+.info-tooltip {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  background: rgba(15, 15, 18, 0.96);
+  border: 1px solid var(--accent-clinical);
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #f4f4f5;
+  font-size: 11.5px;
+  line-height: 1.45;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8);
+}
+
+.info-icon:hover .info-tooltip {
+  opacity: 1;
+  visibility: visible;
+  bottom: 38px;
+}
+
+/* ==========================================================================
+   ESTADO 2: MODAL DE ALERTA DE QUALIDADE DE IMAGEM
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.76);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-card {
+  width: 480px;
+  background-color: var(--bg-secondary);
+  border: 1px solid #3f3f46;
+  border-top: 3px solid var(--alert-amber);
+  border-radius: 8px;
+  padding: 24px 26px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.85);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.modal-tag {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--alert-amber);
+  background: rgba(245, 158, 11, 0.12);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.modal-code {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.modal-body-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  margin-bottom: 22px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--border-clinical);
+  padding-top: 16px;
+}
+
+.btn-secondary-modal {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid #3f3f46;
+  padding: 9px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-secondary-modal:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.btn-primary-xai {
+  background-color: var(--accent-clinical);
+  color: #09090b;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btn-primary-xai:hover {
+  filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   ESTADO 3: PAINEL LATERAL DIREITO FLUTUANTE ("2ª OPINIÃO" - XAI)
+   ========================================================================== */
+.xai-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background-color: rgba(26, 26, 30, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid #3f3f46;
+  border-left: 3px solid var(--accent-clinical);
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
+  z-index: 35;
+  display: none;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.xai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-clinical);
+}
+
+.xai-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--accent-clinical);
+}
+
+.xai-badge {
+  font-size: 10px;
+  background-color: rgba(56, 189, 248, 0.12);
+  color: var(--accent-clinical);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.xai-finding-box {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.xai-finding-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* Slider de Opacidade */
+.slider-container {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-clinical);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.slider-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.slider-value {
+  color: var(--text-primary);
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #2e2e32;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-clinical);
+  border: 2px solid #121212;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+  cursor: grab;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.xai-legend {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend-bar {
+  width: 110px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 50%, #ef4444 100%);
+}
+
+/* Sistema de Chat (2ª Opinião Humana) */
+.btn-human-call {
+  width: 100%;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid var(--accent-clinical);
+  color: var(--accent-clinical);
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+
+.btn-human-call:hover {
+  background: var(--accent-clinical);
+  color: #09090b;
+}
+
+.chat-view {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.typing-indicator {
+  font-style: italic;
+  color: #a1a1aa;
+  font-size: 11.5px;
+  padding: 4px 0;
+}
+
+.chat-bubble {
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+
+.msg-out {
+  background: #27272a;
+  color: var(--text-primary);
+  margin-left: 16px;
+}
+
+.msg-in {
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent-clinical);
+  margin-right: 12px;
+}
+
+.btn-back-chat {
+  background: #2e2e32;
+  border: 1px solid #3f3f46;
+  color: var(--text-primary);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.btn-back-chat:hover {
+  background: #3f3f46;
+}
+
+/* Classes utilitárias de visibilidade */
+.visible-flex { display: flex !important; }
+.visible-block { display: block !important; }
