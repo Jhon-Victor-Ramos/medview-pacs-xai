@@ -26,4 +26,6 @@ Para o pesquisador operar a transição de telas de forma invisível durante as 
 * JavaScript (Vanilla)
 
 ## Hospedagem
-Disponível via GitHub Pages. Para uma melhor experiência de simulação, recomenda-se acessar pelo Google Chrome e utilizar o modo Tela Cheia (`F11`).
+Disponível via [_GitHub Pages_](https://docs.github.com/pt/pages/getting-started-with-github-pages/creating-a-github-pages-site). Para uma melhor experiência de simulação, recomenda-se acessar pelo Google Chrome e utilizar o modo Tela Cheia (`F11`).
+Link:
+- *[medview-pacs-xai](https://jhon-victor-ramos.github.io/medview-pacs-xai/)*
