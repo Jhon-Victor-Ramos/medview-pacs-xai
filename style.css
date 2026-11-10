@@ -1,7 +1,5 @@
 /* ==========================================================================
-   CONFIGURAÇÃO RÁPIDA DO MAPA DE CALOR E DO ÍCONE (i)
-   Dica: Segure SHIFT + CLIQUE sobre a radiografia para posicionar a mancha
-   e o ícone (i) exatamente em cima da fratura antes ou durante o teste.
+   CONFIGURAÇÃO RÁPIDA DO MAPA DE CALOR
    ========================================================================== */
 :root {
   --heatmap-top: 65%;
@@ -318,7 +316,6 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
     margin: 1rem 20rem 0 0;
 }
 
-
 .tag-raw {
   background: rgba(245, 158, 11, 0.18);
   color: #fbbf24;
@@ -394,12 +391,12 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
 }
 
 /* ==========================================================================
-   TOOLTIP DE INFORMAÇÃO (i) - SEMPRE VISÍVEL
+   TOOLTIP DE INFORMAÇÃO (i) - DESVINCULADO DO HEATMAP (CANTO EXTERNO)
    ========================================================================== */
 .info-icon {
   position: absolute;
-  top: calc(var(--heatmap-top) - 42px);
-  left: calc(var(--heatmap-left) + 42px);
+  bottom: -12px;
+  right: -12px;
   width: 24px;
   height: 24px;
   background: rgba(14, 165, 233, 0.85);
@@ -427,9 +424,8 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
 
 .info-tooltip {
   position: absolute;
-  bottom: 34px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 30px;
+  right: 0;
   width: 250px;
   background: rgba(15, 15, 18, 0.96);
   border: 1px solid var(--accent-clinical);
@@ -452,7 +448,7 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
 .info-icon:hover .info-tooltip {
   opacity: 1;
   visibility: visible;
-  bottom: 38px;
+  bottom: 34px;
 }
 
 /* ==========================================================================
