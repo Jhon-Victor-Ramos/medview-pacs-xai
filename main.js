@@ -280,7 +280,7 @@ toolWl.addEventListener("click", () => {
 
 /**
  * 7. CALIBRAÇÃO COM SHIFT + CLIQUE (SINCRONIZADA NAS DUAS IMAGENS)
- * Move tanto o Mapa de Calor quanto o Ícone (i) para o ponto clicado.
+ * Move apenas o Mapa de Calor para o ponto clicado (o Ícone 'i' agora fica fixo).
  */
 [stageOriginal, stageEnhanced].forEach(stage => {
   stage.addEventListener("click", function (event) {
