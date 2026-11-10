@@ -32,7 +32,7 @@
         </div>
         <div class="meta-item">
           <span class="meta-label">Modalidade / Exame</span>
-          <span class="meta-value">CR • RX PUNHO ESQUERDO</span>
+          <span class="meta-value">CR • RX TÓRAX AP (SUSPEITA CLÍNICA)</span>
         </div>
       </div>
     </div>
@@ -116,7 +116,7 @@
             i
             <div class="info-tooltip">
               <strong>Ponto de atenção:</strong><br/>
-              Região do escafoide / rádio distal com baixa nitidez cortical na aquisição original.
+              Opacidade difusa no campo pulmonar prejudicada pelo alto nível de ruído quântico e subexposição da máquina.
             </div>
           </div>
         </div>
@@ -134,8 +134,8 @@
           <div class="info-icon" id="info-icon-enh">
             i
             <div class="info-tooltip">
-              <strong>Evidência Clínica (Radiopaedia):</strong><br/>
-              Fratura transversal irregular demonstrada através do colo do escafoide / rádio distal após redução de ruído.
+              <strong>Evidência Clínica (Kaggle/NIH Dataset):</strong><br/>
+              Consolidação focal no lobo inferior evidenciada após filtro de redução de ruído (<i>Denoise</i>). Padrão sugestivo de processo infeccioso (Pneumonia).
             </div>
           </div>
         </div>
@@ -155,9 +155,10 @@
         <div id="xai-view-main">
           <div class="xai-finding-box">
             <p class="xai-finding-text">
-              Anomalia de densidade detectada: <strong>91% de similaridade</strong> com traço de fratura oculta.
+              Anomalia detectada: <strong>94% de similaridade</strong> com infiltrado pulmonar / consolidação.
             </p>
           </div>
+
 
           <div class="slider-container">
             <div class="slider-header">
@@ -185,13 +186,13 @@
         <!-- NOVA VISÃO: CHAT HUMANO -->
         <div class="chat-view" id="xai-view-chat">
           <div class="chat-bubble msg-out">
-            Solicitando 2ª opinião: suspeita de fratura oculta após realce de ruído...
+            Solicitando 2ª opinião: suspeita de consolidação pulmonar após realce de ruído...
           </div>
           <div class="typing-indicator" id="chat-typing">
             Dr. Roberto (Teleradiologia) está analisando a lâmina...
           </div>
           <div class="chat-bubble msg-in" id="chat-reply" style="display: none;">
-            <strong>Dr. Roberto (Radiologista):</strong> Confirmo o achado da IA. O traço de fratura cortical fica evidente na versão <em>Enhanced</em>. Sugiro imobilização imediata.
+            <strong>Dr. Roberto (Radiologista):</strong> Confirmo o achado da IA. O infiltrado no lobo inferior fica evidente na versão <em>Enhanced</em>. Sugiro correlação clínica e ausculta para pneumonia.
           </div>
           <button class="btn-back-chat" id="btn-back-xai">← Voltar para Controles da IA</button>
         </div>
