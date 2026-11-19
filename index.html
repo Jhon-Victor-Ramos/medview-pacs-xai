@@ -28,7 +28,7 @@
         </div>
         <div class="meta-item">
           <span class="meta-label">Nasc / Sexo</span>
-          <span class="meta-value">14/05/1978 (48a) • M</span>
+          <span class="meta-value">14/05/2018 (8a) • M</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Modalidade / Exame</span>
@@ -86,7 +86,7 @@
       </div>
 
       <div class="dicom-overlay dicom-tr">
-        <div>58 kVp • 3.2 mAs</div>
+        <div>120 kVp • 2.5 mAs</div>
         <div>FOV: 350 mm</div>
       </div>
 
@@ -116,7 +116,7 @@
             i
             <div class="info-tooltip">
               <strong>Ponto de atenção:</strong><br/>
-              Opacidade difusa no campo pulmonar prejudicada pelo alto nível de ruído quântico e subexposição da máquina.
+              Região de base pulmonar com baixa nitidez parenquimatosa na aquisição original.
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@
         <div id="xai-view-main">
           <div class="xai-finding-box">
             <p class="xai-finding-text">
-              Anomalia detectada: <strong>94% de similaridade</strong> com infiltrado pulmonar / consolidação.
+              Opacidade parenquimatosa detectada: <strong>91% de similaridade</strong> com padrão de consolidação pneumônica.
             </p>
           </div>
 
@@ -185,13 +185,13 @@
         <!-- NOVA VISÃO: CHAT HUMANO -->
         <div class="chat-view" id="xai-view-chat">
           <div class="chat-bubble msg-out">
-            Solicitando 2ª opinião: suspeita de consolidação pulmonar após realce de ruído...
+            Solicitando 2ª opinião: suspeita de consolidação pulmonar (pneumonia) após realce de ruído...
           </div>
           <div class="typing-indicator" id="chat-typing">
-            Dr. Roberto (Teleradiologia) está analisando a lâmina...
+            Dr. Roberto (Teleradiologia) está analisando...
           </div>
           <div class="chat-bubble msg-in" id="chat-reply" style="display: none;">
-            <strong>Dr. Roberto (Radiologista):</strong> Confirmo o achado da IA. O infiltrado no lobo inferior fica evidente na versão <em>Enhanced</em>. Sugiro correlação clínica e ausculta para pneumonia.
+            <strong>Dr. Roberto (Radiologista):</strong> Confirmo o achado da IA. A opacidade em lobo inferior fica evidente na versão <em>Enhanced</em>. Sugiro correlação clínica e conduta para pneumonia.
           </div>
           <button class="btn-back-chat" id="btn-back-xai">← Voltar para Controles da IA</button>
         </div>
@@ -206,11 +206,11 @@
   <div class="modal-backdrop" id="alert-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <span class="modal-tag">Auditoria de Qualidade da Lâmina</span>
+        <span class="modal-tag">Auditoria de qualidade da aquisição</span>
         <span class="modal-code">QA-SNR-78</span>
       </div>
       <p class="modal-body-text">
-        ⚠️ <strong>Qualidade de Imagem Subótima (78% de ruído estrutural).</strong><br/><br/>
+        ⚠️ <strong>Qualidade de imagem: <strong>subótima</strong> — (78% de ruído estrutural).</strong><br/><br/>
         Causa provável: Subexposição ou degradação na aquisição. O diagnóstico visual direto pode ser comprometido. Deseja aplicar a restauração e ver a 2ª opinião da IA?
       </p>
       <div class="modal-footer">
