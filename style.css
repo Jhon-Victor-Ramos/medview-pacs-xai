@@ -251,10 +251,9 @@ MENU TOGGLE SUPERIOR (SEMPRE VISÍVEL)
 }
 
 .stage-toggle-btn.active {
-    background-color: rgba(216, 212, 212, 0.05);
-    color: #09090b;
-    color: var(--text-secondary);
-    font-weight: 700;
+  background-color: #2e2e36;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* Metadados técnicos de canto (Padrão DICOM) */
@@ -315,7 +314,7 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
     z-index: 12;
     letter-spacing: 0.4px;
     pointer-events: none;
-    margin: 1rem 20rem 0 0;
+    white-space: nowrap;
 }
 
 .tag-raw {
@@ -405,7 +404,7 @@ PALCO DE EXAMES (SUPORTA 1 IMAGEM OU 2 LADO A LADO NO MODO BOTH)
   backdrop-filter: blur(4px);
   border: 1.5px solid #ffffff;
   border-radius: 50%;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   color: #ffffff;
