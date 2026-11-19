@@ -123,7 +123,11 @@ toggleBtns.forEach(btn => {
  */
 function updateHeatmapVisibility() {
   const showXaiOverlay = (currentState === 3);
-
+  
+  document.querySelectorAll(".info-icon").forEach(el => {
+    el.classList.toggle("visible-flex", showXaiOverlay);
+  });
+  
   heatmaps.forEach(el => {
     el.classList.toggle("visible-block", showXaiOverlay);
   });
@@ -246,8 +250,8 @@ document.getElementById("btn-back-xai").addEventListener("click", () => {
 function applyRadiologyFilters() {
   const contrastValues = [
     { filter: "contrast(1) brightness(1)", label: "W: 2048  L: 1024" },
-    { filter: "contrast(1.35) brightness(1.08)", label: "W: 1400  L: 850 (OSSO)" },
-    { filter: "contrast(0.85) brightness(1.18)", label: "W: 2800  L: 1300 (PARTES MOLES)" }
+    { filter: "contrast(1.35) brightness(1.08)", label: "W: 1400  L: 850 (PULMÃO)" },
+    { filter: "contrast(0.85) brightness(1.18)", label: "W: 2800  L: 1300 (MEDIASTINO)" }
   ];
   const preset = contrastValues[contrastPreset];
   const invertStr = isInverted ? " invert(1)" : "";
