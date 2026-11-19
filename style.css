@@ -1,9 +1,11 @@
 /* ==========================================================================
-   CONFIGURAÇÃO RÁPIDA DO MAPA DE CALOR
-   ========================================================================== */
+  CONFIGURAÇÃO RÁPIDA DO MAPA DE CALOR
+  Dica: apertar o `Shift + Clique Direito` pode alterar o heatmap
+  ========================================================================== */
 :root {
-  --heatmap-top: 65%;
-  --heatmap-left: 45%;
+  /* Demarca a posição inical do heatmap (apenas para o protótipo essa posição é definida inicalmente) */
+  --heatmap-top: 69.1%;
+  --heatmap-left: 39.7%;
   --heatmap-size: 130px;
 
   /* Paleta PACS Dark Mode Estrito */
