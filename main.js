@@ -123,15 +123,14 @@ toggleBtns.forEach(btn => {
  */
 function updateHeatmapVisibility() {
   const showXaiOverlay = (currentState === 3);
-  
-  document.querySelectorAll(".info-icon").forEach(el => {
-    el.classList.toggle("visible-flex", showXaiOverlay);
-  });
-  
+
   heatmaps.forEach(el => {
     el.classList.toggle("visible-block", showXaiOverlay);
   });
   roiRings.forEach(el => {
+    el.classList.toggle("visible-block", showXaiOverlay);
+  });
+  document.querySelectorAll(".roi-badge").forEach(el => {
     el.classList.toggle("visible-block", showXaiOverlay);
   });
 }
@@ -222,6 +221,7 @@ heatmapSlider.addEventListener("input", function (event) {
   heatmaps.forEach(h => { h.style.opacity = normalizedOpacity; });
   roiRings.forEach(r => { r.style.opacity = Math.min(normalizedOpacity * 1.2, 1); });
   sliderPercentage.textContent = `${val}%`;
+  document.querySelectorAll(".roi-badge").forEach(b => { b.style.opacity = val === 0 ? 0 : 1; });
 });
 
 /**
@@ -249,9 +249,9 @@ document.getElementById("btn-back-xai").addEventListener("click", () => {
  */
 function applyRadiologyFilters() {
   const contrastValues = [
-    { filter: "contrast(1) brightness(1)", label: "W: 2048  L: 1024" },
-    { filter: "contrast(1.35) brightness(1.08)", label: "W: 1400  L: 850 (PULMÃO)" },
-    { filter: "contrast(0.85) brightness(1.18)", label: "W: 2800  L: 1300 (MEDIASTINO)" }
+    { filter: "contrast(1) brightness(1)", label: "W: 2048  L: 1024 (PADRÃO)" },
+    { filter: "contrast(1.35) brightness(1.08)", label: "W: 1500  L: -600 (PULMÃO)" },
+    { filter: "contrast(0.85) brightness(1.18)", label: "W: 350  L: 40 (MEDIASTINO)" }
   ];
   const preset = contrastValues[contrastPreset];
   const invertStr = isInverted ? " invert(1)" : "";

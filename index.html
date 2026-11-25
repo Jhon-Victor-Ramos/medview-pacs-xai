@@ -62,9 +62,12 @@
         <span class="tool-label">Inverter</span>
       </button>
       <div class="sidebar-divider"></div>
-      <button class="tool-btn btn-pulse-alert" id="tool-xai" title="Auditoria de Qualidade & Assistente XAI">
-        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12 2.1 10.5"/></svg>
-        <span class="tool-label">XAI</span>
+      <button class="tool-btn btn-pulse-alert" id="tool-xai" title="Análise de Qualidade e Filtro de IA">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/>
+          <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/>
+        </svg>
+        <span class="tool-label">Filtro IA</span>
       </button>
     </aside>
 
@@ -102,42 +105,21 @@
       <!-- PALCO CENTRAL DE EXAMES (SUPORTA 1 OU 2 IMAGENS LADO A LADO) -->
       <div class="comparison-wrapper" id="comparison-wrapper">
 
-        <!-- CARD 1: IMAGEM ORIGINAL (RUIM) -->
+        <!-- CARD 1: IMAGEM ORIGINAL (SEMPRE PURA / SEM MAPA DE CALOR) -->
         <div class="xray-stage" id="stage-original">
           <span class="stage-tag tag-raw">ORIGINAL (RAW • RUÍDO 78%)</span>
           <img id="xray-img-bad" class="xray-img" src="img/raio-x-ruim.png" alt="Raio-X Original com Ruído" />
-          
-          <!-- Mapa de calor e ROI caso o médico ative XAI olhando a original -->
-          <div class="heatmap-overlay heatmap-sync"></div>
-          <div class="roi-ring roi-sync"></div>
-
-          <!-- Tooltip (i) desvinculado no canto da imagem Original -->
-          <div class="info-icon" id="info-icon-orig">
-            i
-            <div class="info-tooltip">
-              <strong>Ponto de atenção:</strong><br/>
-              Região de base pulmonar com baixa nitidez parenquimatosa na aquisição original.
-            </div>
-          </div>
         </div>
 
-        <!-- CARD 2: IMAGEM ENHANCED (BOA) -->
+        <!-- CARD 2: IMAGEM ENHANCED (TRATADA + MAPA DE CALOR + TAG ANCORADA) -->
         <div class="xray-stage hidden-stage" id="stage-enhanced">
-          <span class="stage-tag tag-enhanced">(FILTRO IA APLICADO)</span>
+          <span class="stage-tag tag-enhanced">FILTRO IA APLICADO</span>
           <img id="xray-img-good" class="xray-img" src="img/raio-x-bom.png" alt="Raio-X Restaurado" />
 
-          <!-- Mancha do Mapa de Calor sobreposta -->
+          <!-- Mancha do Mapa de Calor, anel ROI e badge ancorada -->
           <div class="heatmap-overlay heatmap-sync"></div>
           <div class="roi-ring roi-sync"></div>
-
-          <!-- Tooltip (i) desvinculado no canto da imagem Enhanced -->
-          <div class="info-icon" id="info-icon-enh">
-            i
-            <div class="info-tooltip">
-              <strong>Evidência Clínica (Kaggle/NIH Dataset):</strong><br/>
-              Consolidação focal no lobo inferior evidenciada após filtro de redução de ruído (<i>Denoise</i>). Padrão sugestivo de processo infeccioso (Pneumonia).
-            </div>
-          </div>
+          <div class="roi-badge">IA • 91%</div>
         </div>
 
       </div>
@@ -147,15 +129,23 @@
            ==================================================================== -->
       <section class="xai-panel" id="xai-panel">
         <div class="xai-header">
-          <div class="xai-title"><span>2ª Opinião • Assistente XAI</span></div>
-          <span class="xai-badge">Grad-CAM Ativo</span>
+          <div class="xai-title"><span>2ª Opinião • Assistente de IA</span></div>
+          <span class="xai-badge">Mapa de Calor</span>
         </div>
 
         <!-- CONTEÚDO PADRÃO DA IA -->
         <div id="xai-view-main">
           <div class="xai-finding-box">
             <p class="xai-finding-text">
-              Opacidade parenquimatosa detectada: <strong>91% de similaridade</strong> com padrão de consolidação pneumônica.
+              Opacidade parenquimatosa detectada: <strong>91% de confiança (predição)</strong> para consolidação pneumônica.
+            </p>
+          </div>
+
+          <!-- EVIDÊNCIA CLÍNICA INTEGRADA (SUBSTITUI O BOTÃO 'i' ESCONDIDO) -->
+          <div class="xai-evidence-box">
+            <span class="xai-evidence-title">Justificativa da IA (Base de Evidência)</span>
+            <p class="xai-evidence-text">
+              Consolidação focal em lobo inferior evidenciada após redução de ruído (<em>Denoise</em>). Recomenda-se correlação clínica ou incidência complementar (Perfil).
             </p>
           </div>
 
